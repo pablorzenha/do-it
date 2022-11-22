@@ -1,0 +1,75 @@
+import { useDisclosure } from "@chakra-ui/core";
+import { Button, Center, Flex, theme } from "@chakra-ui/react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { FaSearch } from "react-icons/fa";
+import { useAuth } from "../../contexts/AuthContext";
+import { useTasks } from "../../contexts/TasksContext";
+import ModalCreateTask from "../Modal/ModalCreateTask";
+import { Input } from "./input";
+
+interface SearchData {
+  title: string;
+}
+
+function SearchBox() {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { searchTask } = useTasks();
+  const { accessToken } = useAuth();
+
+  const handleSearch = ({ title }: SearchData) => {
+    searchTask(title, accessToken);
+  };
+
+  const { handleSubmit, register } = useForm<SearchData>({});
+
+  return (
+    <>
+      <ModalCreateTask isOpen={isOpen} onClose={onClose} />
+      <Flex
+        mt="6"
+        w="100%"
+        paddingX={["4", "8"]}
+        paddingY="2"
+        paddingBottom="6"
+        borderBottomWidth="1px"
+        borderColor="gray.50"
+        flexDirection={["column", "column", "row", "row"]}
+      >
+        <Flex as="form" onSubmit={handleSubmit(handleSearch)}>
+          <Input
+            placeholder="Pesquisar por tarefas"
+            w={["100%", "100%", "35vw"]}
+            {...register("title")}
+          />
+          <Center
+            borderRadius="8px"
+            as="button"
+            ml="2"
+            w="64px"
+            h="60px"
+            fontSize="2xl"
+            bg="purple.600"
+          >
+            <FaSearch color={theme.colors.white} />
+          </Center>
+        </Flex>
+        <Button
+          bg="purple.500"
+          color="white"
+          paddingX="16"
+          ml={["0", "0", "4"]}
+          h="60px"
+          borderRadius="8px"
+          onClick={onOpen}
+          _hover={{ bg: "purple.600" }}
+          mt={["4", "4", "0"]}
+        >
+          Adicionar uma nova tarefa
+        </Button>
+      </Flex>
+    </>
+  );
+}
+
+export default SearchBox;
